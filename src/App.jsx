@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Card from './components/card';
+import Form from './components/form';
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -14,14 +16,16 @@ function App() {
   }
 
   return (
-    <div className='flex w-100 h-screen p-4'>
+    <div className='flex  flex-col gap-4 w-full h-screen p-4 bg-gray-100'>
+      <h1 className='font-bold'>My Book´s rating </h1>
       {books.map((book) => {
         return (
-          <div key={book.id}>
-            <h1>{book.title}</h1>
-            <h2>{book.author}</h2>
-            <p>{book.rating}/10</p>
-          </div>
+          <Card
+            key={book.id}
+            bookTitle={book.title}
+            bookAuthor={book.author}
+            bookRating={book.rating}
+          />
         );
       })}
     </div>

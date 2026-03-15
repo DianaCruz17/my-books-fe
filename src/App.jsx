@@ -4,6 +4,7 @@ import Form from './components/form';
 import FormToEdit from './components/UI/form-edit-element';
 import Modal from './components/UI/modal';
 import { CirclePlus } from 'lucide-react';
+import BookDataItem from './components/book-data-item';
 
 function App() {
   // GET ALL BOOKS
@@ -37,7 +38,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isForEdit) {
-      await updateBook();
+      await updateBook(editingId);
     } else {
       await postBook();
     }
@@ -122,9 +123,9 @@ function App() {
     const response = await fetch('http://localhost:3000/api/' + id, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'aplication/json',
-        body: JSON.stringify(bookToEdit),
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify(bookToEdit),
     });
     const responseJson = await response.json();
     fetchBooks();
@@ -137,20 +138,23 @@ function App() {
           {books.map((book) => {
             if (editingId === book.id) {
               return (
-                <FormToEdit
-                  handleChangeEdit={handleChangeEdit}
-                  bookData={bookToEdit}
-                  handleSubmit={handleSubmit}
-                />
+                <Card>
+                  <FormToEdit
+                    handleChangeEdit={handleChangeEdit}
+                    bookData={bookToEdit}
+                    handleSubmit={handleSubmit}
+                  />
+                </Card>
               );
             } else {
               return (
-                <Card
-                  key={book.id}
-                  data={book}
-                  deleteBook={deleteBook}
-                  handleSetForEdit={handleSetForEdit}
-                />
+                <Card key={book.id}>
+                  <BookDataItem
+                    data={book}
+                    deleteBook={deleteBook}
+                    handleSetForEdit={handleSetForEdit}
+                  />
+                </Card>
               );
             }
           })}

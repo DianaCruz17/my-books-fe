@@ -1,7 +1,7 @@
 import Button from './UI/button';
 import star from '../assets/star.png';
 
-function Card({ data, deleteBook }) {
+function Card({ data, deleteBook, handleSetForEdit }) {
   let stars = [];
 
   for (let i = 1; i <= data.rating; i++) {
@@ -18,7 +18,9 @@ function Card({ data, deleteBook }) {
         </div>
       </div>
       <div className='flex justify-evenly mt-4'>
-        <Button>Edit</Button>
+        <Button onClickFn={handleSetForEdit} id={data.id}>
+          Edit
+        </Button>
         <Button onClickFn={deleteBook} id={data.id}>
           Delete
         </Button>

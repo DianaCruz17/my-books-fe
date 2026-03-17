@@ -22,6 +22,7 @@ function App() {
   const [isForEdit, setIsForEdit] = useState(false);
   const [bookToEdit, setBookToEdit] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [validation, setValidation] = useState({});
 
   useEffect(() => {
     fetchBooks();
@@ -32,6 +33,8 @@ function App() {
   const handleChangeEdit = (e) => {
     const { name, value } = e.target;
     setBookToEdit({ ...bookToEdit, [name]: value });
+
+    validateFormValues(name, value);
   };
   //Actualiza el estado newBookForm tomando los valores actuales de bookToEdit,
   // //y sobrescribir [name] con el value nuevo.
@@ -72,13 +75,126 @@ function App() {
     } else {
       setEditingId(null);
       setBookToEdit({});
+      setValidation({});
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewBookForm({ ...newBookForm, [name]: value });
+
+    validateFormValues(name, value);
   };
+
+  function validateFormValues(name, value) {
+    if (name === 'title') {
+      // Title Validation
+      let titleValidationMessage = [];
+      if (value.length < 3) {
+        titleValidationMessage.push('Title must contain more than 3 chars.\n');
+        setValidation({
+          ...validation,
+          title: titleValidationMessage,
+        });
+      } else {
+        titleValidationMessage = titleValidationMessage.filter(
+          (msg) => msg !== 'Title must contain more than 3 chars.\n',
+        );
+        setValidation({
+          ...validation,
+          title: titleValidationMessage,
+        });
+      }
+    }
+
+    if (name === 'author') {
+      // Author Validation
+      // evaluate alphanumeric only
+      let authorValidationMessage = [];
+
+      if (value.length < 3) {
+        authorValidationMessage.push(
+          'Author must contain more than 3 chars.\n',
+        );
+        setValidation({
+          ...validation,
+          author: authorValidationMessage,
+        });
+      } else {
+        authorValidationMessage = authorValidationMessage.filter(
+          (msg) => msg !== 'Author must contain more than 3 chars.\n',
+        );
+        setValidation({
+          ...validation,
+          author: authorValidationMessage,
+        });
+      }
+
+      const regexp = /^[a-zA-Z\s'\-À-ÿ]+$/;
+      if (!regexp.test(value)) {
+        authorValidationMessage.push(
+          'Author must contain alphanumeric chars only.\n',
+        );
+        setValidation({
+          ...validation,
+          author: authorValidationMessage,
+        });
+      } else {
+        authorValidationMessage = authorValidationMessage.filter(
+          (msg) => msg !== 'Author must contain alphanumeric chars only.\n',
+        );
+        setValidation({
+          ...validation,
+          author: authorValidationMessage,
+        });
+      }
+    }
+
+    if (name === 'rating') {
+      let ratingValidationMessange = [];
+      if (value < 0) {
+        ratingValidationMessange.push('Rating must not be negative.\n');
+        setValidation({
+          ...validation,
+          rating: ratingValidationMessange,
+        });
+      } else {
+        ratingValidationMessange = ratingValidationMessange.filter(
+          (msg) => msg !== 'Rating must not be negative.\n',
+        );
+        setValidation({
+          ...validation,
+          rating: ratingValidationMessange,
+        });
+      }
+
+      if (value > 10) {
+        ratingValidationMessange.push('Rating must not be greater than 10.\n');
+        setValidation({
+          ...validation,
+          rating: ratingValidationMessange,
+        });
+      } else {
+        ratingValidationMessange = ratingValidationMessange.filter(
+          (msg) => msg !== 'Rating must not be greater than 10.\n',
+        );
+        setValidation({
+          ...validation,
+          rating: ratingValidationMessange,
+        });
+      }
+    }
+  }
+
+  function onModalClose() {
+    setIsOpen(false);
+    setNewBookForm({
+      title: '',
+      author: '',
+      rating: 0,
+    });
+    setValidation({});
+  }
 
   async function fetchBooks() {
     const response = await fetch('http://localhost:3000/api');
@@ -130,6 +246,7 @@ function App() {
     const responseJson = await response.json();
     fetchBooks();
   }
+
   return (
     <>
       <div className='flex w-full h-screen p-4 bg-gray-100 relative'>
@@ -143,6 +260,8 @@ function App() {
                     handleChangeEdit={handleChangeEdit}
                     bookData={bookToEdit}
                     handleSubmit={handleSubmit}
+                    validation={validation}
+                    handleSetForEdit={handleSetForEdit}
                   />
                 </Card>
               );
@@ -165,11 +284,12 @@ function App() {
             size={64}
             className='cursor-pointer text-slate-300 hover:text-slate-600'
           />
-          <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+          <Modal open={isOpen} onClose={() => onModalClose()}>
             <Form
               handleChange={handleChange}
               newBookForm={newBookForm}
               handleSubmit={handleSubmit}
+              validation={validation}
             />{' '}
           </Modal>
         </div>

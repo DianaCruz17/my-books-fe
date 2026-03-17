@@ -1,7 +1,30 @@
+import { useState, useEffect } from 'react';
 import Button from './button';
 import FormElementContainer from './form-element-container';
 
-function FormToEdit({ handleChangeEdit, bookData, handleSubmit }) {
+function FormToEdit({
+  handleChangeEdit,
+  bookData,
+  handleSubmit,
+  validation,
+  handleSetForEdit,
+}) {
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(false);
+
+  useEffect(() => {
+    validateForm();
+  }, [validation]);
+
+  function validateForm() {
+    for (let key in validation) {
+      if (validation[key].length > 0) {
+        setButtonIsDisabled(true);
+      } else {
+        setButtonIsDisabled(false);
+      }
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className='flex flex-col gap-2'>
       <FormElementContainer>
@@ -14,6 +37,15 @@ function FormToEdit({ handleChangeEdit, bookData, handleSubmit }) {
           onChange={(e) => handleChangeEdit(e)}
         />
       </FormElementContainer>
+
+      {validation.title && (
+        <p className='text-xs text-red-300 whitespace-pre'>
+          {Array.isArray(validation.title)
+            ? validation.title.join('')
+            : validation.title}
+        </p>
+      )}
+
       <FormElementContainer>
         <label htmlFor='title'>Author:</label>
         <input
@@ -24,6 +56,13 @@ function FormToEdit({ handleChangeEdit, bookData, handleSubmit }) {
           onChange={(e) => handleChangeEdit(e)}
         />
       </FormElementContainer>
+      {validation.author && (
+        <p className='text-xs text-red-300 whitespace-pre'>
+          {Array.isArray(validation.author)
+            ? validation.author.join('')
+            : validation.author}
+        </p>
+      )}
 
       <FormElementContainer>
         <label htmlFor='title'>Rating:</label>
@@ -35,10 +74,21 @@ function FormToEdit({ handleChangeEdit, bookData, handleSubmit }) {
           onChange={(e) => handleChangeEdit(e)}
         />
       </FormElementContainer>
+      {validation.author && (
+        <p className='text-xs text-red-300 whitespace-pre'>
+          {Array.isArray(validation.rating)
+            ? validation.rating.join('')
+            : validation.ratign}
+        </p>
+      )}
 
       <div className='flex flex-col-2 gap-4 justify-around'>
-        <Button className='w-auto'>Save</Button>
-        <Button>Cancel</Button>
+        <Button className='w-auto' disabled={buttonIsDisabled}>
+          Save
+        </Button>
+        <Button type='button' onClickFn={handleSetForEdit}>
+          Cancel
+        </Button>
       </div>
     </form>
   );

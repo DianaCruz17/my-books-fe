@@ -81,8 +81,6 @@ function Form({ handleChange, newBookForm, handleSubmit, validation }) {
         </p>
       )}
 
-      {JSON.stringify(validation)}
-
       <Button disabled={buttonIsDisabled}>Submit</Button>
     </form>
   );
